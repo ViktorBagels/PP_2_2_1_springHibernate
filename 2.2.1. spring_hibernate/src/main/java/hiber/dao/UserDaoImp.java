@@ -5,6 +5,8 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
@@ -31,11 +33,19 @@ public class UserDaoImp implements UserDao {
 
    @Override
    public User getUserByCar(String model, int series) {
-      String hql = "FROM User u WHERE u.car.model = :model AND u.car.series = :series";
+      String hql = "SELECT u FROM User u JOIN u.car c WHERE c.model = :model AND c.series = :series";
       TypedQuery<User> query = sessionFactory.getCurrentSession()
               .createQuery(hql, User.class);
       query.setParameter("model", model);
       query.setParameter("series", series);
-      return query.getSingleResult();
+      try {
+         return query.getSingleResult();
+      } catch (NoResultException e) {
+         System.out.println("Пользователь с машиной модели " + model + " и серии " + series + " не найден.");
+         return null;
+      } catch (NonUniqueResultException e) {
+         System.out.println("Найдено более одного пользователя с машиной модели " + model + " и серии " + series + ".");
+         return null;
+      }
    }
 }

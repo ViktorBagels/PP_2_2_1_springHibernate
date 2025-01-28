@@ -10,21 +10,22 @@ public class User {
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Long id;
 
-   @Column(name = "name", nullable = false)
+   @Column(name = "name")
    private String firstName;
 
-   @Column(name = "last_name", nullable = false)
+   @Column(name = "last_name")
    private String lastName;
 
-   @Column(name = "email",unique = true, nullable = false)
+   @Column(name = "email", unique = true, nullable = false)
    private String email;
 
-   @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-   @JoinColumn(name = "car_id",referencedColumnName = "id",updatable = false)
+   @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+   @JoinColumn(name = "car_id", referencedColumnName = "id", updatable = false)
    private Car car;
 
-   public User() {}
-   
+   public User() {
+   }
+
    public User(String firstName, String lastName, String email) {
       this.firstName = firstName;
       this.lastName = lastName;
@@ -78,7 +79,7 @@ public class User {
               ", firstName='" + firstName + '\'' +
               ", lastName='" + lastName + '\'' +
               ", email='" + email + '\'' +
-              ", car=" + (car != null ? car.toString() : "null") +
+              ", carId=" + (car != null ? car.getId() : "null") +
               '}';
    }
 }
